@@ -1,53 +1,104 @@
-import { useEffect, useState } from 'react'; 
-import axios from 'axios';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation, Pagination, Autoplay } from 'swiper/modules';
-import 'swiper/css';
-import 'swiper/css/navigation';
-import 'swiper/css/pagination';
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Pagination, Autoplay } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
 
 const Home = () => {
-  const [products, setProducts] = useState([]); // Renamed from medicines to products
-  const [userId, setUserId] = useState('test-user'); // For now, hardcoding userId for simplicity
+  const [products, setProducts] = useState([]);
+  const [userId, setUserId] = useState("test-user"); // Hardcoded userId for simplicity
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
-    // Fetch products from backend (update endpoint to /products)
+    // Fetch products from backend
     axios
-      .get('http://localhost:5000/api/products')
+      .get("http://localhost:5000/api/products")
       .then((response) => {
-        setProducts(response.data); // Renamed from setMedicines to setProducts
+        setProducts(response.data);
       })
       .catch((err) => console.error(err));
   }, []);
 
+  const handleSearch = (e) => {
+    e.preventDefault();
+    // Filter the products or fetch based on the search query
+    axios
+      .get(`http://localhost:5000/api/products?search=${searchQuery}`)
+      .then((response) => {
+        setProducts(response.data);
+      })
+      .catch((err) => console.error(err));
+  };
+
   const addToCart = async (productId) => {
     try {
-      await axios.post('http://localhost:5000/api/cart/add', {
+      await axios.post("http://localhost:5000/api/cart/add", {
         userId: userId,
-        productId: productId, // Renamed from medicineId to productId
-        quantity: 1, // Default quantity 1
+        productId: productId,
+        quantity: 1,
       });
-      alert('Added to Cart!');
+      alert("Added to Cart!");
     } catch (err) {
-      console.log('Failed to add to cart:', err);
+      console.log("Failed to add to cart:", err);
     }
   };
 
   return (
-    <div className='mx-32'>
-      <h1 className="text-center font-lato  text-3xl m-10 mb-6">Medicines</h1> {/* Changed heading from "Medicines" to "Products" */}
+    <div className="mx-32">
+      {/* Search Bar */}
+
+      <form
+        onSubmit={handleSearch}
+        className="flex items-center bg-white rounded-full shadow-md px-4 py-4 mt-8 mb-2 w-full"
+        // Ensures the entire form has proper width and spacing.
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="w-6 h-6 text-gray-500 mr-2"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M15.232 15.232l4.768 4.768M10 18a8 8 0 100-16 8 8 0 000 16z"
+          />
+        </svg>
+        <input
+          type="text"
+          placeholder="Search your Medicines"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="outline-none font-sans text-gray-700 flex-grow text-lg pl-2"
+          // Adjusted `pl-2` for balanced padding within the input field.
+        />
+        <button
+          type="submit"
+          className="bg-blue-500 text-white px-6 py-2 rounded-full hover:bg-blue-600 transition duration-300 text-lg"
+          // Adjusted button color to match the image reference and added `px-6` for better size.
+        >
+          Search
+        </button>
+      </form>
+
+      <h1 className="text-center font-lato text-3xl m-10 mb-6">Medicines</h1>
+
       <Swiper
         modules={[Navigation, Pagination, Autoplay]}
         navigation={{
-          nextEl: '.swiper-button-next',
-          prevEl: '.swiper-button-prev',
+          nextEl: ".swiper-button-next",
+          prevEl: ".swiper-button-prev",
         }}
         pagination={{ clickable: true }}
         autoplay={{ delay: 4000 }}
-        spaceBetween={20} // Reduced space between slides
-        slidesPerView={3} // Number of slides visible at a time
+        spaceBetween={20}
+        slidesPerView={3}
         loop={true}
-        className="product-carousel relative px-4" // Add horizontal padding to the swiper wrapper
+        className="product-carousel relative px-4"
       >
         {products.map((product) => (
           <SwiperSlide key={product._id}>
@@ -60,33 +111,29 @@ const Home = () => {
                 />
               </div>
               <div className="w-1/2 pl-4">
-                {/* Product Category (Regular/Recommended) */}
                 <div className="flex justify-between items-center">
-                  <span className="text-xs text-gray-500">{product.category}</span>
+                  <span className="text-xs text-gray-500">
+                    {product.category}
+                  </span>
                   {product.isRecommended && (
                     <div className="bg-green-500 text-white text-xs px-2 py-1 rounded-md">
                       Recommended
                     </div>
                   )}
                 </div>
-                
-                {/* Product Name */}
                 <h2 className="text-lg font-semibold mt-2">{product.name}</h2>
-
-                {/* Manufacturer Details */}
                 <p className="text-sm text-gray-600">{product.manufacturer}</p>
                 <p className="text-sm text-gray-600">{product.packSize}</p>
-
-                {/* Pricing */}
                 <div className="flex items-center my-4">
-                  <p className="text-lg font-bold text-blue-500">₹{product.price}</p>
-                  {/* <p className="text-xs line-through text-gray-500 ml-2">MRP ₹{product.mrp}</p> */}
+                  <p className="text-lg font-bold text-blue-500">
+                    ₹{product.price}
+                  </p>
                   {product.discount && (
-                    <p className="text-xs text-red-500 ml-2">{product.discount}% OFF</p>
+                    <p className="text-xs text-red-500 ml-2">
+                      {product.discount}% OFF
+                    </p>
                   )}
                 </div>
-
-                {/* Add to Cart Button */}
                 <button
                   onClick={() => addToCart(product._id)}
                   className="bg-red-500 text-white py-2 px-4 rounded-md w-full hover:bg-red-600"
@@ -99,15 +146,37 @@ const Home = () => {
         ))}
       </Swiper>
 
-      {/* Custom navigation arrows with Tailwind styling */}
-      <div className="mx-32 swiper-button-next absolute top-1/2 right-0 transform -translate-y-1/2 z-10 text-gray-700">
-        <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+      {/* Custom Navigation */}
+      <div className="swiper-button-next absolute top-1/2 m-10 right-0 transform -translate-y-1/2 z-10 text-gray-700">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="w-6 h-6"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M9 5l7 7-7 7"
+          />
         </svg>
       </div>
-      <div className="mx-32 swiper-button-prev absolute top-1/2 left-0 transform -translate-y-1/2 z-10 text-gray-700">
-        <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+      <div className="swiper-button-prev absolute m-10 top-1/2 left-0 transform -translate-y-1/2 z-10 text-gray-700">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="w-6 h-6"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M15 19l-7-7 7-7"
+          />
         </svg>
       </div>
     </div>

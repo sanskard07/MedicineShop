@@ -1,54 +1,67 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
 
 function Navbar({ onSearch }) {
-  const [searchQuery, setSearchQuery] = useState('');
+  
+  // const [searchQuery, setSearchQuery] = useState("");
 
-  const handleSearch = (e) => {
-    e.preventDefault();
-    if (onSearch && searchQuery.trim()) {
-      onSearch(searchQuery);
-    }
-  };
-
+  // const handleSearch = (e) => {
+  //   e.preventDefault();
+  //   if (onSearch && searchQuery.trim()) {
+  //     onSearch(searchQuery);
+  //   }
+  // };
+  
   return (
-    <nav className="bg-blue-300 p-4">
-      <div className="container mx-auto flex justify-between items-center">
+    <nav className="bg-[#fdf2f2] p-4">
+      <div className="container mx-32 flex justify-between items-center">
         {/* Flex container for Logo and Search Bar */}
         <div className="flex items-center">
           {/* Logo */}
-          <Link to="/" className="text-black font-roboto font-medium text-2xl mr-4">
+          <Link
+            to="/"
+            className="text-black font-roboto font-medium text-lg mr-4"
+          >
             MedicineShop
           </Link>
 
           {/* Search Bar */}
-          <form onSubmit={handleSearch} className="flex items-center">
+          {/* <form onSubmit={handleSearch} className="flex items-center">
             <input
               type="text"
               placeholder="Search for medicines..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="p-2 rounded-l-md border"
+              className="p-1 text-sm rounded-l-md border w-40" // Adjusted padding and width
             />
-            <button type="submit" className="bg-blue-500 text-white p-2 rounded-r-md">
+            <button
+              type="submit"
+              className="bg-blue-500 text-white p-1 text-sm rounded-r-md" // Adjusted padding and text size
+            >
               Search
             </button>
-          </form>
+          </form> */}
         </div>
 
         {/* Links */}
-        <div>
+        <div className="mx-60">
           <Link
             to="/cart"
-            className="text-black text-lg font-lato mx-4 hover:text-blue-600 hover:underline transition duration-300 ease-in-out"
+            className="text-black text-base font-lato mx-4 hover:text-blue-600 hove:none transition duration-300 ease-in-out"
           >
-            Cart
+            How to order medicines
           </Link>
           <Link
             to="/admin"
-            className="text-black text-lg font-lato hover:text-blue-600 hover:underline transition duration-300 ease-in-out"
+            className="text-black text-base font-lato mx-4 hover:text-blue-600 hove:none transition duration-300 ease-in-out"
           >
-            Admin Dashboard
+            Contact us
+          </Link>
+          <Link
+            to="/admin"
+            className="text-black text-base font-lato mx-4 hover:text-blue-600 hove:none transition duration-300 ease-in-out"
+          >
+            Login
           </Link>
         </div>
       </div>
